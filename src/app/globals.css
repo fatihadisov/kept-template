@@ -1,0 +1,206 @@
+@import "tailwindcss";
+@import "@fontsource-variable/nunito";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ------------------------------------------------------------------
+   Design tokens — carried over from the iOS money app so the two feel like one product:
+   warm paper background, white soft cards, one sage accent, periwinkle + amber as the
+   identities of the two incomes, a soft coral for outflows.
+------------------------------------------------------------------- */
+:root {
+  color-scheme: light;
+  --bg: #f6f4ef;
+  --surface: #ffffff;
+  --surface-2: #f3f1ec;
+  --text: #2a2c30;
+  --text-2: #6c6f75;
+  --text-3: #a5a8ae;
+  --line: rgb(42 44 48 / 0.07);
+  --line-strong: rgb(42 44 48 / 0.13);
+  --accent: #4e8d6e;
+  --accent-soft: rgb(78 141 110 / 0.14);
+  --on-accent: #ffffff;
+  --danger: #d9705f;
+  --danger-soft: rgb(217 112 95 / 0.14);
+  --blue: #7487da;
+  --blue-soft: rgb(116 135 218 / 0.16);
+  --amber: #ea9b4e;
+  --amber-soft: rgb(234 155 78 / 0.18);
+  --shadow-card: 0 6px 16px rgb(0 0 0 / 0.05);
+  --shadow-pop: 0 18px 50px rgb(20 20 30 / 0.16), 0 2px 6px rgb(20 20 30 / 0.06);
+  --overlay: rgb(30 28 24 / 0.38);
+
+  /* Chart colours. Every set below was run through the dataviz validator (OKLab ΔE under
+     protan/deutan simulation, lightness band, chroma floor, contrast) against its surface. */
+  --c-in: #017559; /* money in: deep green-teal */
+  --c-out: #d27854; /* money out: terracotta. Lighter than the green, so they separate even without hue */
+  /* income-source identity, in fixed slot order. Colour follows the source, never its rank */
+  --src-a: #8283d4;
+  --src-b: #daa64f; /* below 3:1 on white: always labelled, and every chart has a table view */
+  --src-c: #01a2a7;
+  --src-d: #d0707b;
+  --src-e: #9a7bd6;
+  --src-f: #b8a14a;
+  --src-0: #a5a8ae; /* "Existing funds": the neutral, de-emphasised slot */
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #141517;
+  --surface: #1f2124;
+  --surface-2: #272a2e;
+  --text: #ededf0;
+  --text-2: #a6a9af;
+  --text-3: #6f7278;
+  --line: rgb(237 237 240 / 0.07);
+  --line-strong: rgb(237 237 240 / 0.14);
+  --accent: #82c6a2;
+  --accent-soft: rgb(130 198 162 / 0.15);
+  --on-accent: #10201a;
+  --danger: #f0907f;
+  --danger-soft: rgb(240 144 127 / 0.15);
+  --blue: #9ba9f0;
+  --blue-soft: rgb(155 169 240 / 0.17);
+  --amber: #f4b878;
+  --amber-soft: rgb(244 184 120 / 0.17);
+  --shadow-card: 0 0 0 transparent;
+  --shadow-pop: 0 18px 50px rgb(0 0 0 / 0.5), 0 0 0 1px rgb(237 237 240 / 0.06);
+  --overlay: rgb(0 0 0 / 0.55);
+
+  --c-in: #3fa98a;
+  --c-out: #b85a3c;
+  --src-a: #638ad4;
+  --src-b: #c77d40;
+  --src-c: #0da5a9;
+  --src-d: #d0707b;
+  --src-e: #9085e9;
+  --src-f: #c9a640;
+  --src-0: #7c8088;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-2);
+  --color-ink-3: var(--text-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-blue: var(--blue);
+  --color-blue-soft: var(--blue-soft);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-c-in: var(--c-in);
+  --color-c-out: var(--c-out);
+  --shadow-card: var(--shadow-card);
+  --shadow-pop: var(--shadow-pop);
+  --font-sans: ui-rounded, "SF Pro Rounded", "Nunito Variable", ui-sans-serif, system-ui, sans-serif;
+  --radius-card: 22px;
+  --animate-sheet-in: sheet-in 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-sheet-out: sheet-out 200ms ease-in forwards;
+  --animate-pop-in: pop-in 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-rise: rise 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sheet-in {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes sheet-out {
+  to { transform: translateY(16px); opacity: 0; }
+}
+@keyframes pop-in {
+  from { transform: scale(0.96) translateY(4px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes rise {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-y: none;
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+  button,
+  [role="button"],
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+  :focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+    outline-offset: 2px;
+  }
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  .num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+  .hairline {
+    border-color: var(--line);
+  }
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .safe-bottom {
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
